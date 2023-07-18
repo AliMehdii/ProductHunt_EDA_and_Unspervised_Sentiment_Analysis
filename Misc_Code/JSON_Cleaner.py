@@ -19,10 +19,12 @@
 
 # print("Updated JSON data saved to 'updated_file.json'.")
 
-import json
 
 # Open the original file for reading
-with open("Posts_2022_Rate_Fix_01.json", "r") as f:
+with open(
+    "C:/Users/alime/Dropbox/PC/Documents/Coding/2023/ProductHunt_EDA_and_Unspervised_Sentiment_Analysis/Data/Stats/JSON/Stats_Year_2022.json",
+    "r",
+) as f:
     lines = f.readlines()
 
 # Process each line
@@ -33,7 +35,7 @@ for line in lines:
     updated_lines.append(updated_line)
 
 # Save the updated lines to a new file
-with open("Posts_2022_Rate_Fix_01_Cleaned.json", "w") as f:
+with open("Stats_Year_2022.json", "w") as f:
     f.writelines(updated_lines)
 
 print("Updated JSON data saved to 'updated_file.json'.")

@@ -2,12 +2,13 @@ import json
 import csv
 
 # Load the JSON data
-with open("Posts_2022_Rate_Fix_01_Cleaned.json") as f:
+with open(
+    "C:/Users/alime/Dropbox/PC/Documents/Coding/2023/ProductHunt_EDA_and_Unspervised_Sentiment_Analysis/Data/Stats/JSON/Stats_Year_2022_Cleaned.json"
+) as f:
     data = json.load(f)
 print("mhm")
 # Open a CSV file for writing
-with open("Posts_2022_Rate_Fix_01_Cleaned.csv", "w", encoding="utf-8") as csvfile:
-
+with open("Stats_Year_2022.csv", "w", encoding="utf-8") as csvfile:
     # Create CSV writer
     writer = csv.writer(csvfile)
 

@@ -7,12 +7,13 @@ Original file is located at
     https://colab.research.google.com/drive/1-OWMVhmBn855uXy198ewoHEyCNdkVdiV
 """
 
-import requests
 import json
 import time
 
+import requests
 from google.colab import drive
-drive.mount('/content/drive')
+
+drive.mount("/content/drive")
 
 access_token = "YmY_hVX5X-e9zKMBPCowCVlvIOpmdkq9wP8H4MEJptE"
 
@@ -53,32 +54,43 @@ query ($afterDate: DateTime!, $beforeDate: DateTime!, $cursor: String) {
 }
 """
 
+
 def send_graphql_request(query, access_token, variables=None):
+    """
+    Sends a GraphQL request to the specified API endpoint.
 
-  url = "https://api.producthunt.com/v2/api/graphql"
+    Parameters:
+        query (str): The GraphQL query to send.
+        access_token (str): The access token for authentication.
+        variables (dict, optional): The variables for the GraphQL query. Defaults to None.
 
-  headers = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {access_token}",
-  }
+    Returns:
+        dict: The JSON response from the API.
+    """
+    url = "https://api.producthunt.com/v2/api/graphql"
 
-  data = {"query": query, "variables": variables}
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {access_token}",
+    }
 
-  response = requests.post(url, headers=headers, data=json.dumps(data))
+    data = {"query": query, "variables": variables}
 
-  # Check rate limit headers
-  limit = int(response.headers['X-Rate-Limit-Limit'])
-  remaining = int(response.headers['X-Rate-Limit-Remaining'])
-  reset = int(response.headers['X-Rate-Limit-Reset'])
-  # print("limit: ", limit)
-  print("remaining: ", remaining)
-  print("reset: ", reset)
-  if remaining < 100:
-    print("Waiting...")
-    time.sleep(int(reset)) # l
+    response = requests.post(url, headers=headers, data=json.dumps(data))
 
+    # Check rate limit headers
+    int(response.headers["X-Rate-Limit-Limit"])
+    remaining = int(response.headers["X-Rate-Limit-Remaining"])
+    reset = int(response.headers["X-Rate-Limit-Reset"])
+    # print("limit: ", limit)
+    print("remaining: ", remaining)
+    print("reset: ", reset)
+    if remaining < 100:
+        print("Waiting...")
+        time.sleep(int(reset))  # l
 
-  return response.json()
+    return response.json()
+
 
 # Specify dates
 before_date = "2022-12-25"
@@ -92,32 +104,31 @@ all_posts = []
 file_path = "/content/drive/My Drive/CS_Projects/2023/Posts_2021_Fix.json"
 
 while True:
+    response = send_graphql_request(query, access_token, variables)
+    print("response", response)
+    # print("response", type(response))
+    # Check response format
+    if "data" not in response or "posts" not in response["data"]:
+        print("Invalid response format.")
+        break
 
-  response = send_graphql_request(query, access_token, variables)
-  print("response", response)
-  # print("response", type(response))
-  # Check response format
-  if "data" not in response or "posts" not in response["data"]:
-    print("Invalid response format.")
-    break
+    posts = response["data"]["posts"]["edges"]
+    all_posts.extend(posts)
 
-  posts = response["data"]["posts"]["edges"]
-  all_posts.extend(posts)
+    pageInfo = response["data"]["posts"]["pageInfo"]
+    has_next_page = pageInfo["hasNextPage"]
 
-  pageInfo = response["data"]["posts"]["pageInfo"]
-  has_next_page = pageInfo["hasNextPage"]
+    if has_next_page:
+        cursor = pageInfo["endCursor"]
+        variables["cursor"] = cursor
 
-  if has_next_page:
-    cursor = pageInfo["endCursor"]
-    variables["cursor"] = cursor
+    else:
+        break
 
-  else:
-    break
+    print("Saved!")
 
-  print("Saved!")
-
-  with open(file_path, "a") as file:
-    json.dump(all_posts, file)
+    with open(file_path, "a") as file:
+        json.dump(all_posts, file)
 
 # file_path = '/content/drive/My Drive/CS_Projects/2023/posts_After_2022-01-01.json'
 
@@ -125,4 +136,3 @@ while True:
 # with open(file_path, "w") as file:
 #     # Step 4: Write the dictionary as JSON data into the file
 #     json.dump(all_posts, file)
-
