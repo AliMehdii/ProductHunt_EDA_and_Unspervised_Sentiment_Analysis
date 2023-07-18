@@ -1,5 +1,5 @@
-import json
 import csv
+import json
 
 
 def handle_encoding(text):
